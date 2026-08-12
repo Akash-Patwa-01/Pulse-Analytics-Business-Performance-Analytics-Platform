@@ -1,211 +1,239 @@
 # Pulse Analytics
 
-A production-oriented static business performance analytics app built with vanilla JavaScript, Supabase Auth/PostgreSQL, Papa Parse, Chart.js and Vercel.
+**Business Performance Analytics Dashboard**
 
-## What this version includes
+Pulse Analytics is a production-oriented web application for analyzing business performance data from CSV files. Users can upload structured business data, calculate KPIs, compare performance between periods, visualize trends, and generate deterministic performance insights.
 
-- Email/password signup and login through Supabase Auth.
-- **Clickable email verification link** after signup.
-- Resend confirmation email.
-- **Clickable password-reset link** that returns to the app and opens the new-password screen.
-- PKCE callback support (`code` query parameter).
-- Support for custom Supabase `token_hash` email links.
-- User profile management.
-- CSV validation and KPI calculations.
-- Current vs previous period comparison.
-- Visualization and deterministic performance insights.
-- Saved reports in Supabase PostgreSQL.
-- Row Level Security (RLS) so users can access only their own reports.
-- Portfolio / LinkedIn / Contact links in the footer.
-- Vercel-friendly static deployment.
+The application combines a vanilla JavaScript frontend with Supabase authentication and PostgreSQL persistence, with row-level security protecting user-owned reports.
 
-## Project structure
+## Overview
 
-```text
-pulse-analytics/
-├── index.html
-├── style.css
-├── app.js
-├── config.js
-├── schema.sql
-└── README.md
-```
+Pulse Analytics was built to solve a common analytics workflow: turning raw CSV business data into an interactive performance report without requiring users to manually calculate KPIs or build charts.
 
-## 1. Supabase database
+The application supports:
 
-Open the Supabase SQL Editor and run `schema.sql`.
+* CSV-based business data analysis
+* KPI calculation
+* Current vs previous period comparison
+* Interactive data visualization
+* Deterministic performance insights
+* User authentication
+* Saved reports
+* Secure user-specific data access
 
-It creates:
+## Core Features
 
-- `profiles`
-- `reports`
-- `report_rows`
-- RLS policies
-- profile creation trigger
+### Authentication
 
-Never put a Supabase secret/service-role key in the frontend. `config.js` must contain only the browser-safe publishable key.
+Implemented authentication using Supabase Auth with:
 
-## 2. Supabase Authentication settings
+* Email/password signup
+* Email verification
+* Resend verification email
+* Login/logout
+* Password recovery
+* Password reset
+* PKCE authentication callback handling
+* Recovery-session handling
 
-In **Authentication → Providers**, enable Email authentication and keep email confirmation enabled.
+### CSV Processing
 
-In **Authentication → URL Configuration**:
-
-### Local Live Preview
-
-If VS Code Live Preview is using port 3000, add:
-
-```text
-http://127.0.0.1:3000/
-http://127.0.0.1:3000/index.html
-http://localhost:3000/
-http://localhost:3000/index.html
-```
-
-### Production
-
-After Vercel deployment, add the exact production URL, for example:
-
-```text
-https://YOUR-PULSE-APP.vercel.app/
-https://YOUR-PULSE-APP.vercel.app/index.html
-```
-
-Set **Site URL** to the main production URL.
-
-The URL passed by the application must be present in Supabase's Redirect URLs allow-list. Supabase documents this requirement here:
-https://supabase.com/docs/guides/auth/redirect-urls
-
-## 3. Email verification template
-
-To make the **clickable verification button** work, the Supabase Confirm signup email template should use:
-
-```html
-<a href="{{ .ConfirmationURL }}">Confirm your email address</a>
-```
-
-Do not replace the confirmation link with OTP-only content if you want users to click the link.
-
-Supabase provides both `{{ .ConfirmationURL }}` and `{{ .Token }}`. This project is designed around the clickable `ConfirmationURL` flow while also supporting direct `token_hash` callbacks.
-
-Reference:
-https://supabase.com/docs/guides/auth/auth-email-templates
-
-## 4. Password reset email template
-
-The password reset template should contain the Supabase confirmation URL, for example:
-
-```html
-<a href="{{ .ConfirmationURL }}">Reset your password</a>
-```
-
-The application calls:
-
-```js
-supabase.auth.resetPasswordForEmail(email, {
-  redirectTo: getRecoveryRedirectUrl()
-});
-```
-
-After the user clicks the email link, Supabase returns the user to the application. The app listens for the `PASSWORD_RECOVERY` auth event and opens the **Set a new password** screen. The new password is then saved with:
-
-```js
-supabase.auth.updateUser({ password });
-```
-
-Reference:
-https://supabase.com/docs/guides/auth/passwords
-
-## 5. Important: test the links correctly
-
-Do not test authentication by opening:
-
-```text
-file:///D:/.../index.html
-```
-
-Use the HTTP server:
-
-```text
-http://127.0.0.1:3000/index.html
-```
-
-Test verification:
-
-1. Create a new account.
-2. Open the confirmation email.
-3. Click **Confirm your email address**.
-4. The browser should return to Pulse Analytics.
-5. The dashboard should open automatically.
-
-Test password reset:
-
-1. Click **Forgot password?**.
-2. Enter the account email.
-3. Open the recovery email.
-4. Click **Reset your password**.
-5. The browser should return to Pulse Analytics.
-6. The **Set a new password** screen should appear.
-7. Enter the new password twice.
-8. Click **Set new password**.
-9. The dashboard should open.
-
-Always use the newest email link. A previously used or expired Supabase email link can no longer be used.
-
-## 6. Configure the frontend
-
-`config.js` contains:
-
-```js
-window.PULSE_CONFIG = {
-  SUPABASE_URL: 'YOUR_SUPABASE_URL',
-  SUPABASE_PUBLISHABLE_KEY: 'YOUR_SUPABASE_PUBLISHABLE_KEY'
-};
-```
-
-Replace the placeholders with your Supabase project URL and browser-safe publishable key if they are not already filled in.
-
-Never use the `service_role` / secret key here.
-
-## 7. CSV format
-
-Required columns:
+Users can upload business performance CSV files containing:
 
 ```text
 Date,Leads,Calls,Visits,Revenue,Conversions
 ```
 
-The application validates dates and numeric values before saving a report.
+The application validates the uploaded dataset before processing it.
 
-## 8. Footer links
+Validation includes:
 
-The footer contains:
+* Required column validation
+* Date validation
+* Numeric value validation
+* Invalid/missing data handling
 
-- LinkedIn
-- Portfolio
-- Contact section on the portfolio
+CSV parsing is performed in the browser using **Papa Parse**.
 
-These are visible on the login screen and inside the authenticated dashboard.
+### Business Analytics
 
-## 9. Deploy to Vercel
+The application calculates key business metrics including:
 
-Push the project to GitHub and import the repository into Vercel.
+* Leads
+* Calls
+* Visits
+* Revenue
+* Conversions
+* Conversion rates
+* Period-over-period changes
 
-This is a static frontend, so no backend build command is required.
+The dashboard compares the current reporting period against a previous period to help identify performance changes.
 
-After deployment:
+### Data Visualization
 
-1. Copy the Vercel production URL.
-2. Put it in Supabase **Site URL**.
-3. Add both the root URL and `/index.html` URL to Supabase **Redirect URLs**.
-4. Test signup verification from the production URL.
-5. Test password recovery from the production URL.
+Interactive charts are generated using **Chart.js** to visualize business performance and make changes easier to understand.
 
-## Security notes
+### Performance Insights
 
-- Passwords are handled by Supabase Auth.
-- CSV parsing happens in the browser before persistence.
-- Reports are protected by PostgreSQL RLS.
-- Every report belongs to an authenticated `user_id`.
-- The publishable key is browser-safe; a secret/service-role key must never be exposed.
-- For larger production use, add custom SMTP, rate limiting/CAPTCHA, automated tests and monitoring.
+Pulse Analytics generates deterministic insights based on calculated metrics and period comparisons.
+
+For example:
+
+* Revenue increased compared with the previous period.
+* Conversion performance declined.
+* Lead volume increased while conversion efficiency decreased.
+
+The insights are generated from the underlying data rather than randomly generated AI text, making the results reproducible.
+
+### Saved Reports
+
+Authenticated users can save their analytics reports to PostgreSQL through Supabase.
+
+Each report is associated with the authenticated user's ID.
+
+### Database Security
+
+The application uses **PostgreSQL Row Level Security (RLS)** to ensure users can access only their own reports.
+
+The database contains:
+
+* `profiles`
+* `reports`
+* `report_rows`
+
+A profile creation trigger is also used to create user profile records automatically.
+
+## Architecture
+
+```text
+                    ┌──────────────────────┐
+                    │       User           │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │   Pulse Analytics    │
+                    │   Vanilla JavaScript │
+                    └──────────┬───────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              │                │                │
+              ▼                ▼                ▼
+        CSV Processing     Analytics        Chart.js
+        Papa Parse         Engine           Visualizations
+              │                │
+              └────────┬───────┘
+                       │
+                       ▼
+                ┌───────────────┐
+                │    Supabase   │
+                │ Auth + DB     │
+                └───────┬───────┘
+                        │
+                        ▼
+                PostgreSQL + RLS
+```
+
+## Technology Stack
+
+| Technology         | Purpose                               |
+| ------------------ | ------------------------------------- |
+| HTML5              | Application structure                 |
+| CSS3               | Responsive UI and styling             |
+| JavaScript         | Application logic and data processing |
+| Supabase Auth      | Authentication and user sessions      |
+| PostgreSQL         | Persistent report storage             |
+| Row Level Security | User-level database protection        |
+| Papa Parse         | CSV parsing                           |
+| Chart.js           | Data visualization                    |
+| Vercel             | Static deployment                     |
+| Git/GitHub         | Version control                       |
+
+## Project Structure
+
+```text
+pulse-analytics/
+│
+├── index.html        # Application UI
+├── style.css         # Styling and responsive layout
+├── app.js            # Application logic and analytics
+├── config.js         # Browser-safe Supabase configuration
+├── schema.sql        # Database schema and RLS policies
+└── README.md         # Project documentation
+```
+
+## Engineering Highlights
+
+### Client-Side Data Processing
+
+CSV data is processed directly in the browser before persistence. This reduces unnecessary server-side processing for the initial analytics workflow.
+
+### Secure Authentication
+
+Authentication and session management are delegated to Supabase Auth rather than implementing password handling manually.
+
+### Row-Level Data Isolation
+
+Reports are protected using PostgreSQL RLS policies based on the authenticated user's ID.
+
+### Deterministic Analytics
+
+Business insights are generated from calculated metrics and predefined analytical rules, making the output predictable and reproducible.
+
+### Static Deployment
+
+The application is designed as a static frontend and can be deployed directly through Vercel without requiring a traditional application server.
+
+## Security Considerations
+
+The frontend contains only the browser-safe Supabase publishable key.
+
+No Supabase service-role or secret key is exposed to the client.
+
+User reports are protected through PostgreSQL Row Level Security.
+
+CSV processing happens in the browser before report persistence.
+
+For a larger production deployment, additional infrastructure could include:
+
+* Custom SMTP
+* Rate limiting
+* CAPTCHA/bot protection
+* Automated testing
+* Application monitoring
+* Error tracking
+
+## What I Built
+
+This project demonstrates practical experience with:
+
+* Frontend application architecture
+* JavaScript data processing
+* Authentication flows
+* CSV data validation
+* KPI and business metric calculations
+* Data visualization
+* PostgreSQL data persistence
+* Row Level Security
+* Responsive web development
+* Git-based development
+* Static cloud deployment
+
+## Future Improvements
+
+Potential improvements include:
+
+* Excel file support
+* More configurable reporting periods
+* Exportable PDF reports
+* Additional business metrics
+* Dashboard customization
+* Automated testing
+* Advanced analytics
+* Team/workspace-based reporting
+
+## Author
+
+**Akash Patwa**
+
+Web Developer focused on JavaScript, modern web applications, data-driven interfaces, and AI-assisted development.
