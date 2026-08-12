@@ -1,0 +1,8 @@
+# Local editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Optional local-only config override
+config.local.js
