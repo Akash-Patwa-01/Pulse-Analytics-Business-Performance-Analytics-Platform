@@ -1,281 +1,343 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pulse Analytics — Business Performance</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulse Analytics — Business Performance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css">
 
 </head>
+
 <body>
 
-<!-- ========== LOGIN SCREEN ========== -->
-<div id="login-screen">
-  <div class="login-wrap">
-  <div class="login-card">
-    <div class="login-eyebrow">Pulse Analytics</div>
-    <h1 id="auth-title">Sign in</h1>
-    <div class="login-sub" id="auth-subtitle">Business performance insights</div>
-    <div class="auth-tabs" id="auth-tabs">
-      <button type="button" class="auth-tab active" id="tab-login">Sign in</button>
-      <button type="button" class="auth-tab" id="tab-signup">Create account</button>
-    </div>
+  <!-- ========== LOGIN SCREEN ========== -->
+  <div id="login-screen">
+    <div class="login-wrap">
+      <div class="login-card">
+        <div class="login-eyebrow">Pulse Analytics</div>
+        <h1 id="auth-title">Sign in</h1>
+        <div class="login-sub" id="auth-subtitle">Business performance insights</div>
+        <div class="auth-tabs" id="auth-tabs">
+          <button type="button" class="auth-tab active" id="tab-login">Sign in</button>
+          <button type="button" class="auth-tab" id="tab-signup">Create account</button>
+        </div>
 
-    <div class="auth-panel active" id="login-panel">
-      <form id="login-form" novalidate>
-        <div class="field"><label for="login-email">Email</label><input id="login-email" type="email" autocomplete="email" required></div>
-        <div class="field"><label for="login-password">Password</label><div class="password-wrap"><input id="login-password" type="password" autocomplete="current-password" required><button type="button" class="pw-toggle" data-target="login-password">Show</button></div></div>
-        <div class="forgot-row"><a href="#" id="forgot-password-link">Forgot password?</a></div>
-        <button class="btn-primary" type="submit" id="login-submit">Sign in</button>
-        <div class="login-error" id="login-error"></div>
-      </form>
-    </div>
+        <div class="auth-panel active" id="login-panel">
+          <form id="login-form" novalidate>
+            <div class="field"><label for="login-email">Email</label><input id="login-email" type="email"
+                autocomplete="email" required></div>
+            <div class="field"><label for="login-password">Password</label>
+              <div class="password-wrap"><input id="login-password" type="password" autocomplete="current-password"
+                  required><button type="button" class="pw-toggle" data-target="login-password">Show</button></div>
+            </div>
+            <div class="forgot-row"><a href="#" id="forgot-password-link">Forgot password?</a></div>
+            <button class="btn-primary" type="submit" id="login-submit">Sign in</button>
+            <div class="login-error" id="login-error"></div>
+          </form>
+        </div>
 
-    <div class="auth-panel" id="signup-panel">
-      <form id="signup-form" novalidate>
-        <div class="field"><label for="signup-name">Full name</label><input id="signup-name" type="text" autocomplete="name" required></div>
-        <div class="field"><label for="signup-email">Email</label><input id="signup-email" type="email" autocomplete="email" required></div>
-        <div class="field"><label for="signup-password">Password</label><div class="password-wrap"><input id="signup-password" type="password" autocomplete="new-password" minlength="8" required><button type="button" class="pw-toggle" data-target="signup-password">Show</button></div><div class="field-hint">Use at least 8 characters.</div></div>
-        <div class="field"><label for="signup-confirm">Confirm password</label><div class="password-wrap"><input id="signup-confirm" type="password" autocomplete="new-password" minlength="8" required><button type="button" class="pw-toggle" data-target="signup-confirm">Show</button></div></div>
-        <button class="btn-primary" type="submit" id="signup-submit">Create account</button>
-        <div class="login-error" id="signup-error"></div>
-      </form>
-    </div>
-    <div class="auth-panel" id="verify-panel">
-      <div class="verification-icon" aria-hidden="true">✓</div>
-      <h2 class="auth-panel-title">Check your email</h2>
-      <div class="login-hint" style="margin-top:8px;">
-        We sent a confirmation link to <strong id="verify-email-label"></strong>.
+        <div class="auth-panel" id="signup-panel">
+          <form id="signup-form" novalidate>
+            <div class="field"><label for="signup-name">Full name</label><input id="signup-name" type="text"
+                autocomplete="name" required></div>
+            <div class="field"><label for="signup-email">Email</label><input id="signup-email" type="email"
+                autocomplete="email" required></div>
+            <div class="field"><label for="signup-password">Password</label>
+              <div class="password-wrap"><input id="signup-password" type="password" autocomplete="new-password"
+                  minlength="8" required><button type="button" class="pw-toggle"
+                  data-target="signup-password">Show</button></div>
+              <div class="field-hint">Use at least 8 characters.</div>
+            </div>
+            <div class="field"><label for="signup-confirm">Confirm password</label>
+              <div class="password-wrap"><input id="signup-confirm" type="password" autocomplete="new-password"
+                  minlength="8" required><button type="button" class="pw-toggle"
+                  data-target="signup-confirm">Show</button></div>
+            </div>
+            <button class="btn-primary" type="submit" id="signup-submit">Create account</button>
+            <div class="login-error" id="signup-error"></div>
+          </form>
+        </div>
+        <div class="auth-panel" id="verify-panel">
+          <div class="verification-icon" aria-hidden="true">✓</div>
+          <h2 class="auth-panel-title">Check your email</h2>
+          <div class="login-hint" style="margin-top:8px;">
+            We sent a confirmation link to <strong id="verify-email-label"></strong>.
+          </div>
+          <div class="login-hint" style="margin-top:10px;">
+            Open the email and click <strong>Confirm your email address</strong>. We'll bring you back to Pulse
+            Analytics automatically.
+          </div>
+          <div class="login-success" id="verify-success"></div>
+          <div class="login-error" id="verify-error"></div>
+          <div class="verification-actions">
+            <button type="button" class="btn-primary" id="open-gmail">Open Gmail</button>
+            <button type="button" class="btn-ghost" id="check-verification">I’ve verified my email</button>
+          </div>
+          <button type="button" class="btn-ghost full-width-action" id="resend-signup-email">Resend confirmation
+            email</button>
+          <div class="forgot-row auth-back-link"><a href="#" id="back-to-login">Back to sign in</a></div>
+        </div>
+
+        <div class="auth-panel" id="forgot-panel">
+          <form id="forgot-form" novalidate>
+            <div class="field"><label for="forgot-email">Account email</label><input id="forgot-email" type="email"
+                autocomplete="email" required></div>
+            <button class="btn-primary" type="submit" id="forgot-submit">Send recovery email</button>
+            <div class="login-error" id="forgot-error"></div>
+            <div class="login-success" id="forgot-success"></div>
+          </form>
+          <div class="forgot-row auth-back-link"><a href="#" id="forgot-back-login">Back to sign in</a></div>
+        </div>
+
+        <div class="auth-panel" id="new-password-panel">
+          <form id="new-password-form" novalidate>
+            <div class="field"><label for="new-password">New password</label>
+              <div class="password-wrap"><input id="new-password" type="password" autocomplete="new-password"
+                  minlength="8" required><button type="button" class="pw-toggle"
+                  data-target="new-password">Show</button></div>
+            </div>
+            <div class="field"><label for="new-password-confirm">Confirm new password</label>
+              <div class="password-wrap"><input id="new-password-confirm" type="password" autocomplete="new-password"
+                  minlength="8" required><button type="button" class="pw-toggle"
+                  data-target="new-password-confirm">Show</button></div>
+            </div>
+            <button class="btn-primary" type="submit" id="new-password-submit">Set new password</button>
+            <div class="login-error" id="new-password-error"></div>
+            <div class="login-success" id="new-password-success"></div>
+          </form>
+        </div>
+
+        <div class="login-hint" id="auth-config-hint" style="margin-top:20px;">Your data stays private. Sign in to securely access your business reports and insights.</div>
       </div>
-      <div class="login-hint" style="margin-top:10px;">
-        Open the email and click <strong>Confirm your email address</strong>. We'll bring you back to Pulse Analytics automatically.
-      </div>
-      <div class="login-success" id="verify-success"></div>
-      <div class="login-error" id="verify-error"></div>
-      <div class="verification-actions">
-        <button type="button" class="btn-primary" id="open-gmail">Open Gmail</button>
-        <button type="button" class="btn-ghost" id="check-verification">I’ve verified my email</button>
-      </div>
-      <button type="button" class="btn-ghost" id="resend-signup-email" style="width:100%;margin-top:12px;">Resend confirmation email</button>
-      <div class="forgot-row" style="text-align:left;margin-top:14px;"><a href="#" id="back-to-login">Back to sign in</a></div>
+      <footer class="site-footer" aria-label="Akash links">
+        <span>Pulse Analytics</span>
+        <span>© 2026 Pulse Analytics</span>
+        <span>Built by Akash Patwa</span>
+        <a href="https://www.linkedin.com/in/theakashpatwa/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="https://my-portfolio-taupe-delta-37.vercel.app/" target="_blank"
+          rel="noopener noreferrer">Portfolio</a>
+        <a href="https://my-portfolio-taupe-delta-37.vercel.app/#contact" target="_blank"
+          rel="noopener noreferrer">Contact</a>
+      </footer>
     </div>
-
-    <div class="auth-panel" id="forgot-panel">
-      <form id="forgot-form" novalidate>
-        <div class="field"><label for="forgot-email">Account email</label><input id="forgot-email" type="email" autocomplete="email" required></div>
-        <button class="btn-primary" type="submit" id="forgot-submit">Send recovery email</button>
-        <div class="login-error" id="forgot-error"></div><div class="login-success" id="forgot-success"></div>
-      </form>
-      <div class="forgot-row" style="text-align:left;margin-top:14px;"><a href="#" id="forgot-back-login">Back to sign in</a></div>
-    </div>
-
-    <div class="auth-panel" id="new-password-panel">
-      <form id="new-password-form" novalidate>
-        <div class="field"><label for="new-password">New password</label><div class="password-wrap"><input id="new-password" type="password" autocomplete="new-password" minlength="8" required><button type="button" class="pw-toggle" data-target="new-password">Show</button></div></div>
-        <div class="field"><label for="new-password-confirm">Confirm new password</label><div class="password-wrap"><input id="new-password-confirm" type="password" autocomplete="new-password" minlength="8" required><button type="button" class="pw-toggle" data-target="new-password-confirm">Show</button></div></div>
-        <button class="btn-primary" type="submit" id="new-password-submit">Set new password</button>
-        <div class="login-error" id="new-password-error"></div><div class="login-success" id="new-password-success"></div>
-      </form>
-    </div>
-
-    <div class="login-hint" id="auth-config-hint" style="margin-top:20px;">Secure account access with email verification.</div>
   </div>
-  <footer class="site-footer" aria-label="Akash links">
-    <span>Built by Akash Patwa</span>
-    <a href="https://www.linkedin.com/in/theakashpatwa/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-    <a href="https://my-portfolio-taupe-delta-37.vercel.app/" target="_blank" rel="noopener noreferrer">Portfolio</a>
-    <a href="https://my-portfolio-taupe-delta-37.vercel.app/#contact" target="_blank" rel="noopener noreferrer">Contact</a>
-  </footer>
-  </div>
-</div>
 
-<!-- ========== APP SCREEN ========== -->
-<div id="app-screen">
-  <header class="topbar">
-    <div class="brand">
-      <div class="dot"></div>
-      <div><h1>Pulse</h1></div>
-      <span>&nbsp;Analytics</span>
-    </div>
-    <nav class="product-nav" aria-label="Primary navigation">
-      <button class="nav-link active" data-view="overview">Overview</button>
-      <button class="nav-link" data-view="reports">Reports</button>
-      <button class="nav-link" data-view="profile">Profile</button>
-    </nav>
-    <div class="topbar-right">
-      <span id="user-label"></span>
-      <button class="btn-ghost" id="logout-btn">Log out</button>
-    </div>
-  </header>
-
-  <main>
-    <section class="view active" id="overview-view">
-      <div class="page-heading">
+  <!-- ========== APP SCREEN ========== -->
+  <div id="app-screen">
+    <header class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
         <div>
-          <p class="eyebrow">Overview</p>
-          <h2>Your business performance</h2>
-          <p class="page-copy">Upload a performance report, save it to your account, and compare periods to understand what is changing.</p>
+          <h1>Pulse</h1>
         </div>
+        <span>&nbsp;Analytics</span>
       </div>
+      <nav class="product-nav" aria-label="Primary navigation">
+        <button class="nav-link active" data-view="overview">Overview</button>
+        <button class="nav-link" data-view="reports">Reports</button>
+        <button class="nav-link" data-view="profile">Profile</button>
+      </nav>
+      <div class="topbar-right">
+        <span id="user-label"></span>
+        <button class="btn-ghost" id="logout-btn">Log out</button>
+      </div>
+    </header>
 
-      <section class="panel">
-        <div class="section-heading">
+    <main>
+      <section class="view active" id="overview-view">
+        <div class="page-heading">
           <div>
-            <p class="eyebrow">New report</p>
-            <h2>Create a performance report</h2>
-          </div>
-          <button class="btn-ghost" id="clear-report-btn" type="button">Clear</button>
-        </div>
-        <div class="report-form-grid">
-          <div class="field">
-            <label for="report-name">Report name</label>
-            <input id="report-name" type="text" maxlength="80" placeholder="August marketing performance">
+            <p class="eyebrow">Overview</p>
+            <h2>Your business performance</h2>
+            <p class="page-copy">Upload a performance report, save it to your account, and compare periods to understand
+              what is changing.</p>
           </div>
         </div>
-        <div class="upload-grid">
-          <div class="upload-slot">
-            <label class="slot-title">Current period CSV</label>
-            <input type="file" id="file-current" accept=".csv,text/csv">
-            <div class="file-status" id="status-current"></div>
+
+        <section class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">New report</p>
+              <h2>Create a performance report</h2>
+            </div>
+            <button class="btn-ghost" id="clear-report-btn" type="button">Clear</button>
           </div>
-          <div class="upload-slot">
-            <label class="slot-title">Previous period CSV <span style="color:var(--text-dim);font-weight:400;">(optional)</span></label>
-            <input type="file" id="file-previous" accept=".csv,text/csv">
-            <div class="file-status" id="status-previous"></div>
+          <div class="report-form-grid">
+            <div class="field">
+              <label for="report-name">Report name</label>
+              <input id="report-name" type="text" maxlength="80" placeholder="August marketing performance">
+            </div>
           </div>
-        </div>
-        <div class="alert-banner" id="alert-banner"></div>
-        <div class="login-hint" style="margin-top:14px;">
-          Required columns: <span class="mono">Date, Leads, Calls, Visits, Revenue, Conversions</span>.
-          Files are validated in your browser before a report is saved.
-        </div>
-        <div class="action-row">
-          <button class="btn-primary" id="save-report-btn" type="button">Save report</button>
-        </div>
+          <div class="upload-grid">
+            <div class="upload-slot">
+              <label class="slot-title" for="file-current">Current period CSV</label>
+              <input type="file" id="file-current" accept=".csv,text/csv">
+              <div class="file-status" id="status-current"></div>
+            </div>
+            <div class="upload-slot">
+              <label class="slot-title" for="file-previous">Previous period CSV <span
+                  class="optional-label">(optional)</span></label>
+              <input type="file" id="file-previous" accept=".csv,text/csv">
+              <div class="file-status" id="status-previous"></div>
+            </div>
+          </div>
+          <div class="alert-banner" id="alert-banner"></div>
+          <div class="login-hint upload-hint">
+            Required columns: <span class="mono">Date, Leads, Calls, Visits, Revenue, Conversions</span>.
+            Files are validated in your browser before a report is saved.
+          </div>
+          <div class="action-row">
+            <button class="btn-primary" id="save-report-btn" type="button">Save report</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Current report</p>
+              <h2>Key metrics</h2>
+            </div>
+          </div>
+          <div id="metrics-empty" class="empty-state">Upload a current-period CSV to populate the dashboard.</div>
+          <div class="metrics-grid" id="metrics-grid" style="display:none;"></div>
+        </section>
+
+        <section class="panel" id="compare-panel" style="display:none;">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Comparison</p>
+              <h2>Period performance</h2>
+            </div>
+          </div>
+          <div class="gauge-row">
+            <div class="gauge-wrap">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#2a3240" stroke-width="10" />
+                <circle id="gauge-ring" cx="60" cy="60" r="50" fill="none" stroke="#e8a33d" stroke-width="10"
+                  stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" transform="rotate(-90 60 60)" />
+                <text id="gauge-text" x="60" y="66" text-anchor="middle" fill="#e7ecef"
+                  font-family="IBM Plex Mono, monospace" font-size="20" font-weight="600">0%</text>
+              </svg>
+              <div class="gauge-caption">Current conversion rate</div>
+            </div>
+            <div class="comparison-table-wrap">
+              <table class="compare" id="compare-table">
+                <thead>
+                  <tr>
+                    <th>Metric</th>
+                    <th>Previous</th>
+                    <th>Current</th>
+                    <th>Change</th>
+                  </tr>
+                </thead>
+                <tbody id="compare-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="chart-panel" style="display:none;">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Visualization</p>
+              <h2>Period change</h2>
+            </div>
+          </div>
+          <div class="chart-wrap"><canvas id="chart"></canvas></div>
+        </section>
+
+        <section class="panel" id="insights-panel" style="display:none;">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Automated analysis</p>
+              <h2>Performance insights</h2>
+            </div>
+          </div>
+          <ul class="insight-list" id="insight-list"></ul>
+        </section>
       </section>
 
-      <section class="panel">
-        <div class="section-heading">
+      <section class="view" id="reports-view">
+        <div class="page-heading">
           <div>
-            <p class="eyebrow">Current report</p>
-            <h2>Key metrics</h2>
+            <p class="eyebrow">Reports</p>
+            <h2>Your saved reports</h2>
+            <p class="page-copy">Reports are stored securely in your account and are only accessible to you.</p>
           </div>
+          <button class="btn-primary" id="new-report-btn" type="button">New report</button>
         </div>
-        <div id="metrics-empty" class="empty-state">Upload a current-period CSV to populate the dashboard.</div>
-        <div class="metrics-grid" id="metrics-grid" style="display:none;"></div>
-      </section>
-
-      <section class="panel" id="compare-panel" style="display:none;">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Comparison</p>
-            <h2>Period performance</h2>
-          </div>
-        </div>
-        <div class="gauge-row">
-          <div class="gauge-wrap">
-            <svg width="120" height="120" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="50" fill="none" stroke="#2a3240" stroke-width="10"/>
-              <circle id="gauge-ring" cx="60" cy="60" r="50" fill="none" stroke="#e8a33d" stroke-width="10"
-                stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" transform="rotate(-90 60 60)"/>
-              <text id="gauge-text" x="60" y="66" text-anchor="middle" fill="#e7ecef" font-family="IBM Plex Mono, monospace" font-size="20" font-weight="600">0%</text>
-            </svg>
-            <div class="gauge-caption">Current conversion rate</div>
-          </div>
-          <div style="flex:1;min-width:260px;overflow:auto;">
-            <table class="compare" id="compare-table">
-              <thead><tr><th>Metric</th><th>Previous</th><th>Current</th><th>Change</th></tr></thead>
-              <tbody id="compare-body"></tbody>
+        <section class="panel">
+          <div id="reports-empty" class="empty-state">You haven't saved any reports yet.</div>
+          <div class="reports-table-wrap" id="reports-table-wrap" style="display:none;">
+            <table class="compare reports-table">
+              <thead>
+                <tr>
+                  <th>Report</th>
+                  <th>Period</th>
+                  <th>Leads</th>
+                  <th>Revenue</th>
+                  <th>Created</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="reports-body"></tbody>
             </table>
           </div>
-        </div>
+        </section>
       </section>
 
-      <section class="panel" id="chart-panel" style="display:none;">
-        <div class="section-heading">
+      <section class="view" id="profile-view">
+        <div class="page-heading">
           <div>
-            <p class="eyebrow">Visualization</p>
-            <h2>Period change</h2>
+            <p class="eyebrow">Account</p>
+            <h2>Your profile</h2>
+            <p class="page-copy">Manage the information associated with your Pulse account.</p>
           </div>
         </div>
-        <canvas id="chart"></canvas>
+        <section class="panel">
+          <form id="profile-form" class="profile-form">
+            <div class="field">
+              <label for="profile-name">Full name</label>
+              <input id="profile-name" type="text" maxlength="100" required>
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input id="profile-email" type="email" readonly>
+              <div class="field-hint">Email addresses are managed by your authentication provider.</div>
+            </div>
+            <button class="btn-primary" type="submit" id="profile-save-btn">Save changes</button>
+            <div class="login-error" id="profile-error"></div>
+            <div class="login-success" id="profile-success"></div>
+          </form>
+        </section>
       </section>
+    </main>
 
-      <section class="panel" id="insights-panel" style="display:none;">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Automated analysis</p>
-            <h2>Performance insights</h2>
-          </div>
-        </div>
-        <ul class="insight-list" id="insight-list"></ul>
-      </section>
-    </section>
+    <footer class="hint app-footer">
+      <span>Pulse Analytics</span>
+      <span>© 2026 Pulse Analytics</span>
+      <span>Built by Akash Patwa</span>
+      <span class="footer-links">
+        <a href="https://www.linkedin.com/in/theakashpatwa/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="https://my-portfolio-taupe-delta-37.vercel.app/" target="_blank"
+          rel="noopener noreferrer">Portfolio</a>
+        <a href="https://my-portfolio-taupe-delta-37.vercel.app/#contact" target="_blank"
+          rel="noopener noreferrer">Contact</a>
+      </span>
+    </footer>
+  </div>
 
-    <section class="view" id="reports-view">
-      <div class="page-heading">
-        <div>
-          <p class="eyebrow">Reports</p>
-          <h2>Your saved reports</h2>
-          <p class="page-copy">Reports are stored securely in your account and are only accessible to you.</p>
-        </div>
-        <button class="btn-primary" id="new-report-btn" type="button">New report</button>
-      </div>
-      <section class="panel">
-        <div id="reports-empty" class="empty-state">You haven't saved any reports yet.</div>
-        <div class="reports-table-wrap" id="reports-table-wrap" style="display:none;">
-          <table class="compare reports-table">
-            <thead><tr><th>Report</th><th>Period</th><th>Leads</th><th>Revenue</th><th>Created</th><th></th></tr></thead>
-            <tbody id="reports-body"></tbody>
-          </table>
-        </div>
-      </section>
-    </section>
-
-    <section class="view" id="profile-view">
-      <div class="page-heading">
-        <div>
-          <p class="eyebrow">Account</p>
-          <h2>Your profile</h2>
-          <p class="page-copy">Manage the information associated with your Pulse account.</p>
-        </div>
-      </div>
-      <section class="panel">
-        <form id="profile-form" class="profile-form">
-          <div class="field">
-            <label for="profile-name">Full name</label>
-            <input id="profile-name" type="text" maxlength="100" required>
-          </div>
-          <div class="field">
-            <label>Email</label>
-            <input id="profile-email" type="email" readonly>
-            <div class="field-hint">Email addresses are managed by your authentication provider.</div>
-          </div>
-          <button class="btn-primary" type="submit" id="profile-save-btn">Save changes</button>
-          <div class="login-error" id="profile-error"></div>
-          <div class="login-success" id="profile-success"></div>
-        </form>
-      </section>
-    </section>
-  </main>
-
-  <footer class="hint app-footer">
-    <span>Pulse Analytics · Your reports are protected by authenticated access and database-level row security.</span>
-    <span class="footer-links">
-      <a href="https://www.linkedin.com/in/theakashpatwa/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      <a href="https://my-portfolio-taupe-delta-37.vercel.app/" target="_blank" rel="noopener noreferrer">Portfolio</a>
-      <a href="https://my-portfolio-taupe-delta-37.vercel.app/#contact" target="_blank" rel="noopener noreferrer">Contact</a>
-    </span>
-  </footer>
-</div>
-
-<script src="config.js"></script>
-<script src="app.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
 </body>
+
 </html>

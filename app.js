@@ -149,7 +149,7 @@ function friendlyAuthError(error) {
 function showApp(user) {
   currentUser = user;
   $('login-screen').style.display = 'none';
-  $('app-screen').style.display = 'block';
+  $('app-screen').style.display = 'flex';
   const name = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Account';
   $('user-label').textContent = name;
   $('profile-name').value = user?.user_metadata?.full_name || '';
